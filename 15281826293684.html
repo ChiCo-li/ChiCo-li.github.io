@@ -272,36 +272,9 @@ int main(int argc, char * argv[]) {
 </ul></li>
 </ul>
 
-<h3 id="toc_6">bl指令</h3>
+<p><img src="media/15281826293684/482DD597-1D2D-4828-A431-4EF46DAAD3F0.png" alt="482DD597-1D2D-4828-A431-4EF46DAAD3F0"/></p>
 
-<ul>
-<li>CPU从何处执行指令是由pc中的内容决定的，我们可以通过改变pc的内容来控制CPU执行目标指令</li>
-<li>ARM64提供了一个mov指令（传送指令），可以用来修改大部分寄存器的值，比如
-
-<ul>
-<li>mov x0,#10、mov x1,#20</li>
-</ul></li>
-<li><p>但是，mov指令不能用于设置pc的值，ARM64没有提供这样的功能</p></li>
-<li><p>ARM64提供了另外的指令来修改PC的值，这些指令统称为转移指令，最简单的是bl指令</p></li>
-</ul>
-
-<h3 id="toc_7">bl指令 -- 练习</h3>
-
-<p>现在有两段代码!假设程序先执行A,请写出指令执行顺序.最终寄存器x0的值是多少?</p>
-
-<pre><code>_A:
-    mov x0,#0xa0
-    mov x1,#0x00
-    add x1, x0, #0x14
-    mov x0,x1
-    bl _B
-    mov x0,#0x0
-    ret
-
-_B:
-    add x0, x0, #0x10
-    ret
-</code></pre>
+<p><img src="media/15281826293684/6046E81D-CE1A-479C-A2A9-11596D9781F0.png" alt="6046E81D-CE1A-479C-A2A9-11596D9781F0"/></p>
 
 		</div>
 	</article>
