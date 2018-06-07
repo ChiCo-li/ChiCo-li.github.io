@@ -129,6 +129,89 @@
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
 		<div class="meta">
 			<div class="date">
+				<time datetime="2018-06-06T14:46:41+08:00" itemprop="datePublished">2018/6/6</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E5%BA%95%E5%B1%82.html'>底层</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="15282676008575.html" itemprop="url">
+		函数研究</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<p>C 代码</p>
+
+<pre><code>int sum(int a, int b, int c, int d, int e, int f, int g, int h, int i) {
+    return a + b  + c + d + e + f + g + h + i;
+}
+
+int main(int argc, char * argv[]) {
+    int c = sum(1,2,3,4,5,6,7,8,9);
+    printf(&quot;%d&quot;,c);
+}
+
+</code></pre>
+
+<p>运行时截取的汇编代码</p>
+
+<pre><code>    0x1044d0f00 &lt;+0&gt;:   sub    sp, sp, #0x30             ; =0x30 
+    0x1044d0f04 &lt;+4&gt;:   stp    x29, x30, [sp, #0x20]
+    0x1044d0f08 &lt;+8&gt;:   add    x29, sp, #0x20            ; =0x20 
+    0x1044d0f0c &lt;+12&gt;:  orr    w8, wzr, #0x1
+    0x1044d0f10 &lt;+16&gt;:  orr    w9, wzr, #0x2
+    0x1044d0f14 &lt;+20&gt;:  orr    w2, wzr, #0x3
+    0x1044d0f18 &lt;+24&gt;:  orr    w3, wzr, #0x4
+    0x1044d0f1c &lt;+28&gt;:  mov    w4, #0x5
+    0x1044d0f20 &lt;+32&gt;:  orr    w5, wzr, #0x6
+    0x1044d0f24 &lt;+36&gt;:  orr    w6, wzr, #0x7
+    0x1044d0f28 &lt;+40&gt;:  orr    w7, wzr, #0x8
+    0x1044d0f2c &lt;+44&gt;:  mov    w10, #0x9
+    0x1044d0f30 &lt;+48&gt;:  stur   w0, [x29, #-0x4]
+    0x1044d0f34 &lt;+52&gt;:  str    x1, [sp, #0x10]
+-&gt;  0x1044d0f38 &lt;+56&gt;:  mov    x0, x8
+    0x1044d0f3c &lt;+60&gt;:  mov    x1, x9
+    0x1044d0f40 &lt;+64&gt;:  str    w10, [sp]
+    0x1044d0f44 &lt;+68&gt;:  bl     0x1044d0e88               ; sum at main.m:12
+    0x1044d0f48 &lt;+72&gt;:  str    w0, [sp, #0xc]
+    0x1044d0f4c &lt;+76&gt;:  ldr    w8, [sp, #0xc]
+    0x1044d0f50 &lt;+80&gt;:  mov    x30, x8
+    0x1044d0f54 &lt;+84&gt;:  mov    x11, sp
+    0x1044d0f58 &lt;+88&gt;:  str    x30, [x11]
+    0x1044d0f5c &lt;+92&gt;:  adrp   x0, 184
+    0x1044d0f60 &lt;+96&gt;:  add    x0, x0, #0xebf            ; =0xebf 
+    0x1044d0f64 &lt;+100&gt;: bl     0x10457cd14               ; symbol stub for: printf
+    0x1044d0f68 &lt;+104&gt;: mov    w8, #0x0
+    0x1044d0f6c &lt;+108&gt;: str    w0, [sp, #0x8]
+    0x1044d0f70 &lt;+112&gt;: mov    x0, x8
+    0x1044d0f74 &lt;+116&gt;: ldp    x29, x30, [sp, #0x20]
+    0x1044d0f78 &lt;+120&gt;: add    sp, sp, #0x30             ; =0x30 
+    0x1044d0f7c &lt;+124&gt;: ret    
+
+</code></pre>
+
+<blockquote>
+<p>sp, sp, #0x30   // 栈从 0x1044d0f00 向上拉升 #0x30 </p>
+
+<p>通过观察，我们不难发现 sum(3, 5) 函数的参数3,5 在汇编中是通过两个寄存器传递的<br/>
+orr    w8, wzr, #0x3<br/>
+mov    w9, #0x5<br/>
+然后到了sum 函数的内部，又通过sp 将数据保存到了栈<br/>
+w0, [sp, #0xc]<br/>
+ldr    w8, [sp, #0xc]</p>
+</blockquote>
+
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
 				<time datetime="2018-06-06T07:32:47+08:00" itemprop="datePublished">2018/6/6</time>
 			</div>
 			<div class="tags">posted in 
@@ -165,6 +248,207 @@
 3.最厉害的一点，他可以直接让线程死亡，也就是当前没做完的操作立马终止</p>
 
 <pre><code>[thread exit];
+</code></pre>
+
+<h3 id="toc_1">GCD</h3>
+
+<ol>
+<li>dispatch queue</li>
+</ol>
+
+<blockquote>
+<p>任务间执行的方式<br/>
+DISPATCH_QUEUE_CONCURRENT 并行 <br/>
+DISPATCH_QUEUE_SERIAL_INACTIVE 串行<br/>
+同步异步<br/>
+dispatch_async 开启异步队列，具备开启线程的能力<br/>
+dispatch_sync  开启同步队列，不会开辟新的线程</p>
+</blockquote>
+
+<p>1.并行异步</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_queue_create(&quot;gcd1.queue&quot;, DISPATCH_QUEUE_CONCURRENT);
+    dispatch_async(queue, ^{
+        for (int index = 0; index &lt; 10; index++) {
+            NSLog(@&quot;gcd1.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int index = 0; index &lt; 10; index++) {
+            NSLog(@&quot;gcd2.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int index = 0; index &lt; 10; index++) {
+            NSLog(@&quot;gcd3.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int index = 0; index &lt; 10; index++) {
+            NSLog(@&quot;gcd4.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int index = 0; index &lt; 10; index++) {
+            NSLog(@&quot;gcd5.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+</code></pre>
+
+<p>执行结果</p>
+
+<pre><code>[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第133行]: gcd4.queue &lt;NSThread: 0x600000667480&gt;{number = 6, name = (null)}
+[第128行]: gcd3.queue &lt;NSThread: 0x600000666a80&gt;{number = 5, name = (null)}
+[第118行]: gcd1.queue &lt;NSThread: 0x600000663d00&gt;{number = 4, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第123行]: gcd2.queue &lt;NSThread: 0x604000474740&gt;{number = 3, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+[第138行]: gcd5.queue &lt;NSThread: 0x6000006674c0&gt;{number = 7, name = (null)}
+</code></pre>
+
+<blockquote>
+<p>dispatch_async 会从当前的线程切换到新的线程， DISPATCH_QUEUE_CONCURRENT 并发执行，异步并发的线程会开启多条线程，线程的数量由任务数量、系统可分配线程数共同决定</p>
+</blockquote>
+
+<p>串行异步</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_queue_create(&quot;gcd1.queue&quot;, DISPATCH_QUEUE_SERIAL);
+    dispatch_async(queue, ^{
+        for (int index = 0; index &lt; 100; index++) {
+            NSLog(@&quot;gcd1.queue&quot;);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int index = 0; index &lt; 100; index++) {
+            NSLog(@&quot;gcd2.queue&quot;);
+        }
+    });
+</code></pre>
+
+<p>执行结果</p>
+
+<pre><code>[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第147行]: gcd1.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+[第152行]: gcd2.queue &lt;NSThread: 0x60400047f500&gt;{number = 8, name = (null)}
+</code></pre>
+
+<blockquote>
+<p>我是在主线程调用的这个测试，然后执行结果 <NSThread: 0x60400047f500>{number = 8, name = (null)} <br/>
+所以串行异步会从当前线程切换到新线程，但是只会开一条线程然后顺序执行</p>
+</blockquote>
+
+<p>并行同步</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_queue_create(&quot;gcd1.queue&quot;, DISPATCH_QUEUE_CONCURRENT);
+    dispatch_sync(queue, ^{
+        for (int index = 0; index &lt; 100; index++) {
+            NSLog(@&quot;gcd1.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int index = 0; index &lt; 100; index++) {
+            NSLog(@&quot;gcd2.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+</code></pre>
+
+<p>执行结果</p>
+
+<pre><code>[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第160行]: gcd1.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+[第165行]: gcd2.queue &lt;NSThread: 0x600000072040&gt;{number = 1, name = main}
+</code></pre>
+
+<p>串行同步</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_queue_create(&quot;gcd1.queue&quot;, DISPATCH_QUEUE_CONCURRENT);
+    dispatch_sync(queue, ^{
+        for (int index = 0; index &lt; 100; index++) {
+            NSLog(@&quot;gcd1.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int index = 0; index &lt; 100; index++) {
+            NSLog(@&quot;gcd2.queue %@&quot;,[NSThread currentThread]);
+        }
+    });
 </code></pre>
 
 
@@ -993,7 +1277,7 @@ git push -u origin master
 			</div>
 		</div>
 		<h1 class="title" itemprop="name"><a href="15254799163209.html" itemprop="url">
-		002--函数本质</a></h1>
+		汇编和寄存器</a></h1>
 		<div class="entry-content" itemprop="articleBody">
 			
 			<h2 id="toc_0">关于CPU的补充</h2>
@@ -1050,21 +1334,20 @@ git push -u origin master
 <h2 id="toc_6">栈</h2>
 
 <ul>
-<li>栈：是一种具有特殊的访问方式的存储空间（后进先出， Last In Out Firt，LIFO）
-<img src="media/15193997917344/15193998892055.jpg" alt=""/></li>
+<li>栈：是一种具有特殊的访问方式的存储空间（后进先出， Last In Out Firt，LIFO）</li>
 </ul>
 
 <h3 id="toc_7">SP和FP寄存器</h3>
 
 <ul>
 <li>sp寄存器在任意时刻会保存我们栈顶的地址.</li>
-<li><p>fp寄存器也称为x29寄存器属于通用寄存器,但是在某些时刻我们利用它保存栈底的地址!()</p>
+<li>fp寄存器也称为x29寄存器属于通用寄存器,但是在某些时刻我们利用它保存栈底的地址!()</li>
+</ul>
 
 <blockquote>
 <p>注意:ARM64开始,取消32位的 LDM,STM,PUSH,POP指令! 取而代之的是ldr\ldp  str\stp<br/>
 ARM64里面 对栈的操作是16字节对齐的!!</p>
-</blockquote></li>
-</ul>
+</blockquote>
 
 <h3 id="toc_8">关于内存读写指令</h3>
 
