@@ -453,6 +453,33 @@ dispatch_barrier_sync 和 dispatch_barrier_async 都会将前后的任务隔开�
 区别是 sync 是同步的， 也就是说当前的线程执行到dispatch<u>barrier</u>sync 时会去执行这个队列里的任务【如果当前队列和当前的线程是一个，会死锁】 dispatch_async 是异步的，不需要切换到该队列去执行</p>
 </blockquote>
 
+<p>NSOperation</p>
+
+<pre><code>//第一条线
+NSInvocationOperation *firstOperation 
+= [[NSInvocationOperation alloc]
+   initWithTarget:self
+   selector:@selector(firstStep)
+   object:nil];
+
+[firstOperation setName:@&quot;qk.queue.firstOperation&quot;];
+
+//第二条线
+NSInvocationOperation *secondOperation
+= [[NSInvocationOperation alloc] initWithTarget:self
+       selector:@selector(secondStep)
+                 object:nil];
+        
+  [secondOperation setName:@&quot;qk.queue.secondOperation&quot;];
+        
+        
+//前面的要在后边的执行完成后才能够执行
+[secondOperation addDependency:firstOperation];
+
+//如果没有添加依赖关系 operation 会并发执行
+[self.queue addOperation:secondOperation];
+</code></pre>
+
 
 			
 			
