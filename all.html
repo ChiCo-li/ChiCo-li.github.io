@@ -129,6 +129,99 @@
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
 		<div class="meta">
 			<div class="date">
+				<time datetime="2018-06-09T08:32:08+08:00" itemprop="datePublished">2018/6/9</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E5%B7%A5%E5%85%B7.html'>工具</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="15285043283743.html" itemprop="url">
+		Mac 搭建 简易的 Apache 服务器</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<h4 id="toc_0">目的：可以很方便的模拟服务器数据，其好处有:</h4>
+
+<blockquote>
+<p>1.不需要等待服务器的开发，可以先行写测试数据。【测试数据的好处】<br/>
+2. 相对于本地项目中添加的假数据，一是数据来源的流程更真实，不需要添加额外的代码，二是不需要添加假数据，不会污染本地项目，如果在项目完成后没有即使清理假数据，会成为项目的垃圾。<br/>
+3. 数据管理更加方便、灵活。</p>
+</blockquote>
+
+<h4 id="toc_1">步骤</h4>
+
+<blockquote>
+<p>1.在用户目录下创建 Sites 文件夹，创建的文件夹会有浏览器的图标。<br/>
+2. Commend + Shift + G 打开前往文件夹窗口, 粘贴 /etc/apache2/ 前往到 apache2<br/>
+3. 复制一份httpd.conf 放在当前文件夹，以防改错了可以很方便改回来，然后在拷贝一份httpd.conf 放到桌面，方便修改。<br/>
+4. 用文字、代码编辑器编辑httpd.conf<br/>
+4.1 搜索DocumentRoot 和 DocumentRoot 改成 /User/ChiCo/Sites 【注释：也就是Sites的位置】<br/>
+4.2 搜索Options 找到  Options FollowSymLinks Multiviews  在 Options 后加 Indexes <br/>
+4.3 搜索php 找到那一行，去掉前面的注释 #<br/>
+4.4 httpd.conf 修改完成，保存一下<br/>
+5. Commend + Shift + G 然后 /etc/apache2/ 再次去 apache2， 用桌面的 httpd.conf 替换掉里面的<br/>
+6. 回到上一层文件夹, 拷贝php.ini.default 名字改成php.ini 放在当前文件夹<br/>
+7. 所有的修改完成，启动一下Apache 服务器， 终端输入 sudo apachectl -k start<br/>
+8. 验证是否配置好服务器，打开任意浏览器，输入localhost 或者 127.0.0.1</p>
+</blockquote>
+
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
+				<time datetime="2018-06-08T15:17:58+08:00" itemprop="datePublished">2018/6/8</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E5%A4%9A%E5%AA%92%E4%BD%93.html'>多媒体</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="15284422780201.html" itemprop="url">
+		</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
+				<time datetime="2018-06-07T16:10:53+08:00" itemprop="datePublished">2018/6/7</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E5%A4%9A%E7%BA%BF%E7%A8%8B.html'>多线程</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="15283590530292.html" itemprop="url">
+		</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
 				<time datetime="2018-06-06T14:46:41+08:00" itemprop="datePublished">2018/6/6</time>
 			</div>
 			<div class="tags">posted in 
@@ -536,31 +629,35 @@ dispatch_barrier_sync 和 dispatch_barrier_async 都会将前后的任务隔开�
 区别是 sync 是同步的， 也就是说当前的线程执行到dispatch<u>barrier</u>sync 时会去执行这个队列里的任务【如果当前队列和当前的线程是一个，会死锁】 dispatch_async 是异步的，不需要切换到该队列去执行</p>
 </blockquote>
 
-<p>NSOperation</p>
+<p>NSOperation 可以很方便管理任务之间的依赖</p>
 
-<pre><code>//第一条线
-NSInvocationOperation *firstOperation 
-= [[NSInvocationOperation alloc]
-   initWithTarget:self
-   selector:@selector(firstStep)
-   object:nil];
-
-[firstOperation setName:@&quot;qk.queue.firstOperation&quot;];
-
-//第二条线
-NSInvocationOperation *secondOperation
-= [[NSInvocationOperation alloc] initWithTarget:self
-       selector:@selector(secondStep)
-                 object:nil];
-        
-  [secondOperation setName:@&quot;qk.queue.secondOperation&quot;];
-        
-        
-//前面的要在后边的执行完成后才能够执行
-[secondOperation addDependency:firstOperation];
-
-//如果没有添加依赖关系 operation 会并发执行
-[self.queue addOperation:secondOperation];
+<pre><code>    self.queue = [[NSOperationQueue alloc] init];
+    [self.queue setName:@&quot;qk.queue.com&quot;];
+    
+    //第一条线
+    NSInvocationOperation *firstOperation
+    = [[NSInvocationOperation alloc]
+       initWithTarget:self
+       selector:@selector(firstStep)
+       object:nil];
+    
+    [firstOperation setName:@&quot;qk.queue.firstOperation&quot;];
+    
+    //第二条线
+    NSInvocationOperation *secondOperation
+    = [[NSInvocationOperation alloc] initWithTarget:self
+                                           selector:@selector(secondStep)
+                                             object:nil];
+    
+    [secondOperation setName:@&quot;qk.queue.secondOperation&quot;];
+    
+    
+    //前面的要在后边的执行完成后才能够执行
+    [secondOperation addDependency:firstOperation];
+    
+    //如果没有添加依赖关系 operation 会并发执行
+    [self.queue addOperation:secondOperation];
+    [self.queue addOperation:firstOperation];
 </code></pre>
 
 
