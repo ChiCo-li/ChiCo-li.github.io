@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>  
 	  
-  	AppSafe - 
+  	App安全与加密下 - 
   	
 	</title>
 
@@ -123,24 +123,10 @@
 		</div>	
 		<div class="mid-col">
 			<div class="mid-col-container"> <div id="content" class="inner">
-<div itemscope itemtype="http://schema.org/Blog">
 
-
-	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-		<div class="meta">
-			<div class="date">
-				<time datetime="2018-06-13T09:54:13+08:00" itemprop="datePublished">2018/6/13</time>
-			</div>
-			<div class="tags">posted in 
-			
-			    <a class='category' href='AppSafe.html'>AppSafe</a>&nbsp;
-			 
-			</div>
-		</div>
-		<h1 class="title" itemprop="name"><a href="15288548488435.html" itemprop="url">
-		App安全与加密下</a></h1>
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">App安全与加密下</h1>
 		<div class="entry-content" itemprop="articleBody">
-			
 			<h3 id="toc_0">Hash （散列函数）</h3>
 
 <p>1.Hash定义</p>
@@ -247,176 +233,12 @@ echo -n &quot;hello world&quot;&quot; | openssl sha -sha512 -hmac &quot;key&quot
 
 <h4 id="toc_2">对称加密</h4>
 
-
-			
-			
 		</div>
-
 	</article>
- 
-	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-		<div class="meta">
-			<div class="date">
-				<time datetime="2018-06-11T13:48:50+08:00" itemprop="datePublished">2018/6/11</time>
-			</div>
-			<div class="tags">posted in 
-			
-			    <a class='category' href='AppSafe.html'>AppSafe</a>&nbsp;
-			 
-			</div>
-		</div>
-		<h1 class="title" itemprop="name"><a href="15286961308804.html" itemprop="url">
-		App全与加密上</a></h1>
-		<div class="entry-content" itemprop="articleBody">
-			
-			<h3 id="toc_0">加密算法分类</h3>
-
-<blockquote>
-<ul>
-<li>对称加密:加密和解密都是使用一个密钥，密钥的保密工作就非常重要.</li>
-<li>非对称加密:用公钥加密，私钥解密; 用私钥加密，公钥解密.</li>
-</ul>
-</blockquote>
-
-<h4 id="toc_1">对称加密</h4>
-
-<p>常见对称加密算法</p>
-
-<blockquote>
-<p>1.DES 数据加密标准<br/>
-2. 3DES<br/>
-3. AES <q>高级</q>加密标准<br/>
-4. ECB 电子代码本,每个块都是独立加密的<br/>
-5.CBC 密码块链:使用一个密钥和一个初始化向量 (IV)对数据执行加密转换,可以有效地保证密文的完整性。</p>
-</blockquote>
-
-<p>ECB 终端测试命令</p>
-
-<pre><code>$ openssl enc -des-ecb -K 616263 -nosalt -in msg1.txt -out msg1.bin //加密
-$ openssl enc -des-ecb -K 616263 -nosalt -in msg1.bin -out msg1.txt -d //解密
-$ xxd msg1.bin // 查看加密之后的二进制文件
-</code></pre>
-
-<p>CBC终端测试命令</p>
-
-<pre><code>$ openssl enc -des-cbc -K 616263 -iv 0000000000000000 -nosalt -in a.txt -out msg1.bin //加密
-$ openssl enc -des-cbc -K 616263 -iv 0000000000000000 -nosalt -in msg1.bin -out msg4.txt -d //解密
-$ xxd msg1.bin //查看加密之后的二进制文件
-</code></pre>
-
-<h5 id="toc_2">非对称加密算法</h5>
-
-<p>概要</p>
-
-<blockquote>
-<p>1.加密解密方法： 用公钥解密然后用私钥解密；或者私钥加密然后用公钥解密<br/>
-2.优缺点，优点是安全 缺点是速度慢</p>
-</blockquote>
-
-<p>RSA原理<br/>
-<img src="media/15286961308804/15287963724258.jpg" alt=""/></p>
-
-<p>OpenSSL 终端命令</p>
-
-<pre><code>openssl genrsa -out private.pem 512 //生成强度是 512 的 RSA 私钥
-openssl rsa -in private.pem -text -out private.txt //以明文输出私钥内容
-openssl rsa -in private.pem -check //校验私钥文件
-openssl rsa -in private.pem -out public.pem -outform PEM -pubout //从私钥中提取公钥
-$ openssl rsa -in public.pem -out public.txt -pubin -pubout -text //以明文输出公钥内容
-openssl rsautl -encrypt -pubin -inkey public.pem -in msg.txt -out msg.bin //使用公钥加密小文件
-openssl rsautl -decrypt -inkey private.pem -in msg.bin -out a.txt //使用私钥解密小文件
-openssl rsa -in private.pem -out private.der -outform der //将私钥转换成 DER 格式
-openssl rsa -in public.pem -out public.der -pubin -outform der //将公钥转换成 DER 格式
-</code></pre>
-
-<p>iOS 相关证书生成命令</p>
-
-<pre><code>openssl genrsa -out ca.key 1024 //生成私钥
-openssl req -new -key ca.key -out rsacert.csr //创建证书请求
-openssl x509 -req -days 3650 -in rsacert.csr -signkey ca.key -out rsacert.crt //生成证书并签名，有效期10年
-openssl x509 -outform der -in rsacert.crt -out rsacert.der //将 PEM 格式文件转换成 DER 格式
-openssl pkcs12 -export -out p.p12 -inkey ca.key -in rsacert.crt //入P12文件
-</code></pre>
-
-<h4 id="toc_3">安全之签名</h4>
-
-<p>MD5 </p>
-
-<blockquote>
-<p>Hash 散列函数不可逆的特点，是“加密”的另一种应用，可实现对安全信息的签名验证和标志文件。【不是正真的加密算法】</p>
-</blockquote>
-
-<p>RSA </p>
-
-<blockquote>
-<p>RSA算法有两个作用一个是加密一个是数字签名<br/>
-数字签名<br/>
-    发送方<br/>
-        <q>报文</q> HASH 得到 <q>报文摘要</q><br/>
-        <q>报文摘要</q> 用公钥加密(数字签名) + 报文<br/>
-            发送给接收方<br/>
-    接收方<br/>
-        <q>报文</q> HASH 得到 <q>报文摘要</q><br/>
-        <q>数字签名</q> 用私钥解密 判断是否与 <q>报文摘要</q> 相同</p>
-</blockquote>
-
-<h4 id="toc_4">iOS 安全特有功能</h4>
-
-<p>1.手机指纹、密码登录</p>
-
-<blockquote>
-<p>1 判断是否有使用指纹或密码验证: - (BOOL)canEvaluatePolicy:(LAPolicy)policy error:(NSError * __autoreleasing *)error <strong>attribute</strong>((swift_error(none)));<br/>
-policy 分为: LAPolicyDeviceOwnerAuthenticationWithBiometrics 和 LAPolicyDeviceOwnerAuthentication， 前者只使用指纹，后者在指纹失败后会弹出密码验正。<br/>
-2 请求验证，弹出验证界面 - (void)evaluatePolicy:(LAPolicy)policy localizedReason:(NSString *)localizedReason reply:(void(^)(BOOL success, NSError * error))reply;<br/>
-3 验证结果，如果 success 是YES标志验证成功，NO标志不成功。 当验证不成共时，error 有： </p>
-
-<blockquote>
-<p>3.1 LAErrorAuthenticationFailed - 指纹无法识别<br/>
-3.2 LAErrorUserCancel     --用户点击了取消<br/>
-3.3 LAErrorUserFallback   --用户点击了输入密码<br/>
-3.4 LAErrorSystemCancel   --系统取消<br/>
-3.5 LAErrorPasscodeNotSet --因为你设备上没有设置密码<br/>
-3.6 LAErrorTouchIDNotAvailable  --设备没有Touch ID<br/>
-3.7 LAErrorTouchIDNotEnrolled   --因为你的用户没有输入指纹<br/>
-3.8 LAErrorTouchIDLockout --多次输入，密码锁定<br/>
-3.9 LAErrorAppCancel--    比如电话进入，用户不可控的</p>
-</blockquote>
-</blockquote>
-
-<p>2.钥匙串：保存安全性很高的小数据，他还具有一次保存，长久保留【删除应用后还存在】的特点</p>
-
-<h4 id="toc_5">iOS 中重要的函数</h4>
-
-<p>1.非对称加密函数</p>
-
-<blockquote>
-<p>SecKeyEncrypt 使用公钥对数据加密<br/>
-SecKeyDecrypt 使用私钥对数据解密<br/>
-SecKeyRawVerify 使用公钥对数字签名进行验证<br/>
-SecKeyRawSign  使用私钥生成数字签名</p>
-</blockquote>
-
-
-			
-			
-		</div>
-
-	</article>
-  
-
-</div>
-<nav id="pagenavi">
-	 
+	<div class="share-comment">
 	
-	<div class="center"><a href="archives.html">Blog Archives</a></div>
-
-</nav>
-
-</div>
-
-
-
-        </div>
+	</div>
+</div>        </div>
 			<footer id="footer" class="inner">Copyright &copy; 2014
 Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
 Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>

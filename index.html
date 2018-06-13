@@ -129,6 +129,134 @@
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
 		<div class="meta">
 			<div class="date">
+				<time datetime="2018-06-13T09:54:13+08:00" itemprop="datePublished">2018/6/13</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='AppSafe.html'>AppSafe</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="15288548488435.html" itemprop="url">
+		App安全与加密下</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<h3 id="toc_0">Hash （散列函数）</h3>
+
+<p>1.Hash定义</p>
+
+<blockquote>
+<p>Hash:把任意长度的输入，通过散列算法，变换成固定长度的输出，该输出就是散列值。这种转换是一种压缩映射，也就是，散列值的空间通常远小于输入的空间，不同的输入可能会散列成相同的输出，而不可能从散列值来唯一的确定输入值。简单的说就是一种将任意长度的消息压缩到某一固定长度的消息摘要的函数。</p>
+</blockquote>
+
+<p>2.哈希的特点</p>
+
+<blockquote>
+<p>1.同样的输入会有同样的哈希值。<br/>
+2.同一个哈希值可以从不同的输入得到。<br/>
+3.任意长度的输入得到的输出长度固定，也就是说这种算法是不可以逆的。</p>
+</blockquote>
+
+<p>3.哈希的用途</p>
+
+<blockquote>
+<ol>
+<li>数字签名</li>
+<li>文件比对，同一个文件的hash值是一样的，而且Hash值是很难重复的。</li>
+<li>git 提交的版本对比号码</li>
+<li>原文加密，比如用户的密码。在客户端和服务器直接使用加密后的密码，这样黑客很难得到用户的真实输入的密码。</li>
+</ol>
+</blockquote>
+
+<p>4.常用的函数</p>
+
+<pre><code>// data 需要加密的数据  len 加密数据的长度 md 加密后的结果
+
+//MD5 
+CC_MD5(const void *data, CC_LONG len, unsigned char *md)
+
+// SHA1 
+CC_SHA1(const void *data, CC_LONG len, unsigned char *md)
+
+// SHA256
+CC_SHA256(const void *data, CC_LONG len, unsigned char *md)
+</code></pre>
+
+<p>5.高级版的哈希算法 - HMAC</p>
+
+<blockquote>
+<p>HMAC是密钥相关的哈希运算消息认证码（HMAC运算利用哈希算法，以一个密钥和一个消息为输入，生成一个消息摘要作为输出。</p>
+</blockquote>
+
+<pre><code>// SHA512
+CC_SHA512(const void *data, CC_LONG len, unsigned char *md)
+
+// CCHmac 
+/* algorithm 有：
+    kCCHmacAlgSHA1,
+    kCCHmacAlgMD5,
+    kCCHmacAlgSHA256,
+    kCCHmacAlgSHA384,
+    kCCHmacAlgSHA512,
+    kCCHmacAlgSHA224
+*/
+// key 加固数据
+void CCHmac(
+    CCHmacAlgorithm algorithm,  /* kCCHmacAlgSHA1, kCCHmacAlgMD5 */
+    const void *key,
+    size_t keyLength,           /* length of key in bytes */
+    const void *data,
+    size_t dataLength,          /* length of data in bytes */
+}
+
+</code></pre>
+
+<p>6.终端生成Hash 值命令， 我们义字符串 “hello world” 为例</p>
+
+<pre><code>md5 -s &quot;hello world&quot; //MD5
+echo -n &quot;hello world&quot;&quot; | openssl sha -sha1 //SHA1
+echo -n &quot;hello world&quot;&quot; | openssl sha -sha256 //SHA256
+echo -n &quot;hello world&quot;&quot; | openssl sha -sha512 //SHA512
+echo -n &quot;hello world&quot;&quot; | openssl dgst -md5 -hmac &quot;key&quot; //HMAC + MD5
+echo -n &quot;hello world&quot;&quot; | openssl sha -sha1 -hmac &quot;key&quot; /HMAC + SHA1
+echo -n &quot;hello world&quot;&quot; | openssl sha -sha256 -hmac &quot;key&quot; /HMAC + SHA256
+echo -n &quot;hello world&quot;&quot; | openssl sha -sha512 -hmac &quot;key&quot; /HMAC + SHA512
+</code></pre>
+
+<h4 id="toc_1">Hash 破解与防范</h4>
+
+<p>破解原理 </p>
+
+<blockquote>
+<ol>
+<li>通过穷举字符组合的方式，创建了明文密文对应查询数据库。 这种破解的一般是密码，这种简单的字符串</li>
+<li>获得签名的规则和加盐值，进行重签名，然后就可以更改参数的值</li>
+</ol>
+</blockquote>
+
+<p>防范</p>
+
+<blockquote>
+<ol>
+<li>对于密码的转化，可以使用更难穷举的HMAC</li>
+<li>对于重签名，加盐的参数不放在客户端【客户端可逆向获取】</li>
+<li>对于网络传输加盐值可以截取的问题，可以将这个设置一个时效性。</li>
+<li>参数不要采用明文，可以使用一定的加密方式</li>
+</ol>
+</blockquote>
+
+<h4 id="toc_2">对称加密</h4>
+
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
 				<time datetime="2018-06-11T13:48:50+08:00" itemprop="datePublished">2018/6/11</time>
 			</div>
 			<div class="tags">posted in 
@@ -138,7 +266,7 @@
 			</div>
 		</div>
 		<h1 class="title" itemprop="name"><a href="15286961308804.html" itemprop="url">
-		App全与加密</a></h1>
+		App全与加密上</a></h1>
 		<div class="entry-content" itemprop="articleBody">
 			
 			<h3 id="toc_0">加密算法分类</h3>
@@ -256,6 +384,17 @@ policy 分为: LAPolicyDeviceOwnerAuthenticationWithBiometrics 和 LAPolicyDevic
 </blockquote>
 
 <p>2.钥匙串：保存安全性很高的小数据，他还具有一次保存，长久保留【删除应用后还存在】的特点</p>
+
+<h4 id="toc_5">iOS 中重要的函数</h4>
+
+<p>1.非对称加密函数</p>
+
+<blockquote>
+<p>SecKeyEncrypt 使用公钥对数据加密<br/>
+SecKeyDecrypt 使用私钥对数据解密<br/>
+SecKeyRawVerify 使用公钥对数字签名进行验证<br/>
+SecKeyRawSign  使用私钥生成数字签名</p>
+</blockquote>
 
 
 			
