@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>  
 	  
-  	 - 
+  	GPUImage 初探 - 
   	
 	</title>
 
@@ -125,9 +125,108 @@
 			<div class="mid-col-container"> <div id="content" class="inner">
 
 	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-		<h1 class="title" itemprop="name"></h1>
+		<h1 class="title" itemprop="name">GPUImage 初探</h1>
 		<div class="entry-content" itemprop="articleBody">
-			
+			<ol>
+<li>功能</li>
+</ol>
+
+<blockquote>
+<p>1.imgage的PS工具，具有丰富的滤镜和特效<br/>
+2.美颜相机：实时处理摄像头返回的图片数据<br/>
+3.视频滤镜、美颜</p>
+</blockquote>
+
+<p>2.优点</p>
+
+<blockquote>
+<p>1.最低可支持 iOS 4.0<br/>
+2.使用了GPU，可充分利用苹果手机的硬件，响应速度快。<br/>
+3.底层是对OpenGL的封装，可降低开发难度<br/>
+4.内置两百多种滤镜，还可自定义滤镜，实用性和扩展性强</p>
+</blockquote>
+
+<p>3.GPUImage 使用的大致流程</p>
+
+<blockquote>
+<p>1.image -&gt; GPUImageOutput, 将外部待处理图片传入到 GPUImageOutput 等待处理<br/>
+2.创建所需要的滤镜，通过 GPUImageOutput 的 addTarget 去实现滤镜，滤镜可以叠加。<br/>
+3.通过GPUImageInput 获得处理后的结果</p>
+</blockquote>
+
+<p>4.GPUImage 使用的框架</p>
+
+<blockquote>
+<p>1.AVFoundation 拍照和视频录制<br/>
+2.CoreMedia 音视频的时间管理<br/>
+3.CoreVideo 视频处理<br/>
+4.OpenGLES 图像处理，GPUImage的核心<br/>
+5.QuarzCore 核心动画（需要看在哪用了）</p>
+</blockquote>
+
+<p>5.GPUImage 板块</p>
+
+<blockquote>
+<p>1.图片的输入: GPUImageOutput、GPUImageVideoCamera、GPUImageStillCamera、GPUImagePicture、GPUImageMovie、GPUImageMovieComposition、GPUImageTextureInput、GPUImageRawDataInput、GPUImageUIElement、GPUImageColorConversion<br/>
+2.处理后的图片/输出:GPUImageView、GPUImageMovieWriter、GPUImageTextureOutput、GPUImageRawDataOutput<br/>
+3.核心 —— 滤镜: 色彩、图像处理、混合、特效</p>
+</blockquote>
+
+<p>6.GPUImage 滤镜的基础类</p>
+
+<blockquote>
+<p>GPUImageFilter //所有Filter父类<br/>
+    GPUImageTwoInputFilter<br/>
+    GPUImageThreeInputFilter<br/>
+    GPUImageFourInputFilter<br/>
+    GPUImageTwoPassFilter<br/>
+    GPUImageTwoPassTextureSamplingFilter<br/>
+    GPUImageFilterGroup<br/>
+    GPUImage3x3TextureSamplingFilter<br/>
+    GPUImageTwoInputCrossTextureSamplingFilter<br/>
+    GPUImageBuffer</p>
+</blockquote>
+
+<p>7.项目常用滤镜 —— 颜色滤镜说明</p>
+
+<blockquote>
+<p>GPUImageBrightnessFilter 亮度滤镜<br/>
+    GPUImageLevelsFilter 层次过滤器<br/>
+    GPUImageExposureFilter 曝光滤镜<br/>
+    GPUImageContrastFilter 对比度滤镜<br/>
+    GPUImageSaturationFilter 饱和度滤镜<br/>
+    GPUImageGammaFilter Gamma滤镜<br/>
+    GPUImageColorMatrixFilter 彩色矩阵滤镜<br/>
+    GPUImageRGBFilter RGB滤镜<br/>
+    GPUImageHSBFilter HSB(噪点)滤镜<br/>
+    GPUImageHueFilter Hue色调滤镜<br/>
+    GPUImageMonochromeFilter 单色滤镜<br/>
+    GPUImageFalseColorFilter 伪彩色滤镜<br/>
+    GPUImageHazeFilter 迷雾滤镜<br/>
+    GPUImageSepiaFilter 深褐色滤镜<br/>
+    GPUImageColorInvertFilter 彩色反转滤镜<br/>
+    GPUImageGrayscaleFilter 灰度滤镜<br/>
+    GPUImageLuminanceThresholdFilter 亮度阈值滤镜<br/>
+    GPUImageAdaptiveThresholdFilter 自适应阈值滤镜<br/>
+    GPUImageSolarizeFilter 曝光滤镜<br/>
+    GPUImageAverageLuminanceThresholdFilter 平均亮度阈值滤镜<br/>
+    GPUImageHistogramFilter     直方图滤镜<br/>
+    GPUImageHistogramGenerator 特殊直方图滤镜<br/>
+    GPUImageHistogramEqualizationFilter 直方图均衡化滤波器<br/>
+    GPUImageToneCurveFilter 色调曲线滤波器<br/>
+    GPUImageHighlightShadowFilter 高光阴影滤镜<br/>
+    GPUImageLookupFilter 查找滤波器<br/>
+    GPUImageAmatorkaFilter 阿普特卡滤波器<br/>
+    GPUImageSoftEleganceFilter 基于查找的颜色重映射过滤器<br/>
+    GPUImageOpacityFilter 调整传入图像的Alpha通道<br/>
+    GPUImageAverageColor 图像中每个像素的RGBA分量进行平<br/>
+    GPUImageLuminosity 图像缩小到其平均亮度<br/>
+    GPUImageSolidColorGenerator 纯色滤镜<br/>
+    GPUImageChromaKeyFilter 色度键滤波器<br/>
+    GPUImageWhiteBalanceFilter 白平衡滤镜<br/>
+    GPUImageLuminanceRangeFilter 亮度范围滤镜</p>
+</blockquote>
+
 		</div>
 	</article>
 	<div class="share-comment">
