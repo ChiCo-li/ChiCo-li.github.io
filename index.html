@@ -229,32 +229,12 @@ self.GPUImageView = [[GPUImageView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_
 <blockquote>
 <p>初始化设置<br/>
 initWithMovieURL:size 视屏保存的地址和视频的大小<br/>
-encodingLiveVideo 是否</p>
+startRecording 开始录制<br/>
+[filter addTarget:self.movieWriter] 添滤镜<br/>
+[self.movieWriter startRecording] 开始录制<br/>
+[self.videoCamera pauseCameraCapture]; 暂停<br/>
+[self.videoCamera resumeCameraCapture]; 恢复</p>
 </blockquote>
-
-<pre><code>//MovieURL 视屏保存的地址
-self.movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:self.movieURL size:CGSizeMake(480.0, 640.0)];
-
-self.movieWriter.encodingLiveVideo = YES;
-self.movieWriter.shouldPassthroughAudio = YES;
-
-    
-//添加滤镜
-[self.saturationFilter addTarget:self.movieWriter];
-    
-self.videoCamera.audioEncodingTarget = self.movieWriter;
-
-// 开始录制
-[self.movieWriter startRecording];
-
-//暂停
-[self.videoCamera pauseCameraCapture];
- //恢复
-[self.videoCamera resumeCameraCapture];
-        
-//完成
-
-</code></pre>
 
 
 			
