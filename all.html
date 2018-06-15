@@ -1162,7 +1162,7 @@ dispatch_queue_t queue = dispatch_queue_create(&quot;gcd&quot;, DISPATCH_QUEUE_S
 <blockquote>
 <p>1.资源的加锁范围尽量缩小，也就是可以不占用后立马释放<br/>
 2.加锁时限（线程尝试获取锁的时候加上一定的时限，超过时限则放弃对该锁的请求，并释放自己占有的锁）<br/>
-3.</p>
+3. 死锁检测是一个更好的死锁预防机制，它主要是针对那些不可能实现按序加锁并且锁超时也不可行的场景。</p>
 </blockquote>
 
 
