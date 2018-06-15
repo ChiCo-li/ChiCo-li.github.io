@@ -129,6 +129,143 @@
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
 		<div class="meta">
 			<div class="date">
+				<time datetime="2018-06-15T07:08:00+08:00" itemprop="datePublished">2018/6/15</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='%E5%A4%9A%E5%AA%92%E4%BD%93.html'>多媒体</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="15290176801726.html" itemprop="url">
+		GPUImage 极简使用</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<h4 id="toc_0">单张图片处理</h4>
+
+<p>1.单个滤镜</p>
+
+<pre><code>//设置滤镜
+[self.filter useNextFrameForImageCapture];
+[self.filter forceProcessingAtSizeRespectingAspectRatio:self.image.size];
+self.filter.brightness = 0.5;
+
+// 传入要处理的图片
+GPUImagePicture *picture = [[GPUImagePicture alloc] initWithImage:self.image];
+// 给图片添加滤镜
+[picture addTarget:self.filter];
+
+//渲染
+[picture processImage];
+
+//从滤镜中获取图片
+[self.imageView setImage:self.filter.imageFromCurrentFramebuffer];
+</code></pre>
+
+<p>2.滤镜组</p>
+
+<pre><code>//第一个滤镜
+self.filter1 = [[GPUImageBrightnessFilter alloc] init];
+self.filter1.brightness = 0.0;
+    
+//第二个滤镜
+self.filter2 = [[GPUImageSaturationFilter alloc] init];
+self.filter2.saturation = 1.0;
+    
+//滤镜组
+self.groupFilter = [[GPUImageFilterGroup alloc] init];
+[self.groupFilter addTarget:self.filter1];
+[self.groupFilter addTarget:self.filter2];
+[self.groupFilter forceProcessingAtSizeRespectingAspectRatio:self.image.size];
+    
+//滤镜间的依赖关系，一个滤镜处理好后再去处理下一个滤镜
+[self.filter1 addTarget:self.filter2];
+[self.groupFilter setInitialFilters:[NSArray arrayWithObject:self.filter1]];
+[self.groupFilter setTerminalFilter:self.filter2];
+    
+//输入源
+GPUImagePicture *picture = [[GPUImagePicture alloc] initWithImage:self.image];
+[picture addTarget:self.groupFilter];
+   
+ //处理图片并获取输出 
+[self.groupFilter useNextFrameForImageCapture];
+[picture processImage];
+[self.imageView setImage:self.groupFilter.imageFromCurrentFramebuffer];
+</code></pre>
+
+<p>3.美颜相机</p>
+
+<pre><code>//创建相机
+self.Camera = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 cameraPosition:AVCaptureDevicePositionFront];
+self.Camera.outputImageOrientation = UIInterfaceOrientationPortrait;
+
+//创建滤镜
+self.filter = [[GPUImageSaturationFilter alloc] init];
+self.filter.saturation = 1.0;
+    
+//相机上添加滤镜    
+[self.Camera addTarget:self.filter];
+    
+//图片处理后的输出展示
+self.GPUImageView = [[GPUImageView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-64)];
+[self.view addSubview:self.GPUImageView];
+
+//输出结果要给显示
+[self.filter addTarget:self.GPUImageView];
+
+//开始捕获图像
+[self.Camera startCameraCapture];
+
+//拍照获取的图片
+ [self.Camera capturePhotoAsJPEGProcessedUpToFilter:self.filter withCompletionHandler:^(NSData *processedJPEG, NSError *error) {
+        
+  
+        
+    }];
+</code></pre>
+
+<p>4.视屏录制</p>
+
+<blockquote>
+<p>初始化设置<br/>
+initWithMovieURL:size 视屏保存的地址和视频的大小<br/>
+encodingLiveVideo 是否</p>
+</blockquote>
+
+<pre><code>//MovieURL 视屏保存的地址
+self.movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:self.movieURL size:CGSizeMake(480.0, 640.0)];
+
+self.movieWriter.encodingLiveVideo = YES;
+self.movieWriter.shouldPassthroughAudio = YES;
+
+    
+//添加滤镜
+[self.saturationFilter addTarget:self.movieWriter];
+    
+self.videoCamera.audioEncodingTarget = self.movieWriter;
+
+// 开始录制
+[self.movieWriter startRecording];
+
+//暂停
+[self.videoCamera pauseCameraCapture];
+ //恢复
+[self.videoCamera resumeCameraCapture];
+        
+//完成
+
+</code></pre>
+
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
 				<time datetime="2018-06-14T18:00:12+08:00" itemprop="datePublished">2018/6/14</time>
 			</div>
 			<div class="tags">posted in 
