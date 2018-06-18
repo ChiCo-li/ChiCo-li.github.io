@@ -129,6 +129,92 @@
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
 		<div class="meta">
 			<div class="date">
+				<time datetime="2018-06-17T16:01:33+08:00" itemprop="datePublished">2018/6/17</time>
+			</div>
+			<div class="tags">posted in 
+			
+			    <a class='category' href='RunTime.html'>RunTime</a>&nbsp;
+			 
+			</div>
+		</div>
+		<h1 class="title" itemprop="name"><a href="15292224936903.html" itemprop="url">
+		OC 消息</a></h1>
+		<div class="entry-content" itemprop="articleBody">
+			
+			<h4 id="toc_0">1. 来看一段OC代码</h4>
+
+<blockquote>
+<p>QKTeacher *teacher = [[QKTeacher alloc] init];<br/>
+[super setName:@<q>刘邦</q>];<br/>
+[teacher greet];</p>
+</blockquote>
+
+<p>编译后的代码</p>
+
+<pre><code>QKTeacher *teacher = objc_msgSend(objc_getClass(&quot;QKTeacher&quot;), @selector(alloc));
+teacher = objc_msgSend(teacher, @selector(init));
+struct objc_super teachSuper = {teacher,class_getSuperclass(objc_getClass(&quot;QKTeacher&quot;))};
+objc_msgSendSuper(&amp;teachSuper, @selector(setName:),@&quot;刘邦&quot;);
+objc_msgSend(teacher, @selector(greet));
+</code></pre>
+
+<p>动态添加方法</p>
+
+<pre><code> + (BOOL)resolveClassMethod:(SEL)sel {
+    if ([NSStringFromSelector(sel) isEqualToString:@&quot;newMethord:&quot;]) {
+        class_addMethod(self, sel, (IMP)newMethord, &quot;v@:@&quot;);
+    }
+    return [super resolveClassMethod:sel];
+}
+void newMethord(id self, SEL _cmd,NSString *str) {
+    NSLog(@&quot;str : %@&quot;,str);
+}
+
+// 消息调用
+ objc_msgSend(tearcher, @selector(newMethord:),@&quot;刘邦&quot;);
+</code></pre>
+
+<p>小结  </p>
+
+<blockquote>
+<ol>
+<li>对于[QKTeacher alloc]这样的消息，编译时会转化成objc_msgSend()函数</li>
+<li>objc_msgSend() 包括消息的发送者，消息的名字，参数。</li>
+<li>objc_msgSend() 有两个隐含的参数 id self 和 SEL _comd</li>
+<li>[super setName:@<q>刘邦</q>] 这样的消息，编译时会转化成 objc_msgSendSuper</li>
+<li>objc_msgSendSuper() 包括父类的结构体指针、方法、方法的参数</li>
+<li>struct objc_super 这个结构体里边包括子类的实例，子类的父类的名称</li>
+</ol>
+</blockquote>
+
+<h4 id="toc_1">2. OC 消息的运行流程</h4>
+
+<p>1.转换成objc_msgSend<br/>
+<img src="media/15292224936903/15293077721874.jpg" alt=""/></p>
+
+<p>2.查找方法的实现<br/>
+<img src="media/15292224936903/15293086013208.jpg" alt=""/></p>
+
+<p>3.消息转发</p>
+
+<blockquote>
+<p>1.1 类方法转发前处理 + (BOOL)resolveClassMethod:(SEL)sel;<br/>
+1.2 实例方法转发前处理+ (BOOL)resolveInstanceMethod:(SEL)sel<br/>
+2.重定向消息 - (id)forwardingTargetForSelector:(SEL)aSelector<br/>
+3.消息转发 - (void)forwardInvocation:(NSInvocation *)anInvocation<br/>
+4.如果都没处理，就会报找不到消息的异常</p>
+</blockquote>
+
+
+			
+			
+		</div>
+
+	</article>
+ 
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		<div class="meta">
+			<div class="date">
 				<time datetime="2018-06-15T14:35:08+08:00" itemprop="datePublished">2018/6/15</time>
 			</div>
 			<div class="tags">posted in 
